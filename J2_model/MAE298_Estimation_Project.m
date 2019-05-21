@@ -14,8 +14,8 @@ KalmanParams
 % Load Battery Measurements 
 load('OCV_table.mat')
 load('OCV_slope_table.mat')
-load('IV_data_nonlinear.mat')
-% load('SimTruth1.mat')
+% load('IV_data_nonlinear.mat')
+load('FifthOrder_Truth_BestNAN_Fixed.mat')
 
 Q= 4; 
 R = 1000;
@@ -110,7 +110,10 @@ KalmanParams
 % Load Battery Measurements 
 load('OCV_table.mat')
 load('OCV_slope_table.mat')
-load('IV_data_nonlinear.mat')
+% load('IV_data_nonlinear.mat')
+load('FifthOrder_Truth_BestNAN.mat')
+
+%%
 
 P(1) = 0;           % Covariance 
 x1(1) = 1;          % SOC - Battery Fully Charged 
