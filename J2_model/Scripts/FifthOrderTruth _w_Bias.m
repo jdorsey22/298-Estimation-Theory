@@ -3,6 +3,8 @@
 
 %% Set Parameters: 
 
+clear all 
+
 C1 = 5630; 
 C2 = 54277; 
 C3 = 56000;
@@ -17,7 +19,7 @@ R0 = .02402;
 alpha = .65; 
 Cbat = 5*3600;  
 
-
+Vbias = .01;
 
 Tau1 = C1*R1; 
 Tau2 = C2*R2; 
@@ -84,7 +86,7 @@ x1_hat(1) = x1(1);
 var1 = 3.5*10^-7;
 var2 = 1*10^-7;
 % var4 = 2*10^-6;
-var4 = 1.5*10^-7;
+var4 = 1.0*10^-7;
 
 var3 = 0;
 
@@ -97,9 +99,9 @@ for k = 2:1:length(t)
     x5(k) = Ad(5,5)*x5(k-1) + Bd(5,1)*I(k-1)+ normrnd(0,sqrt(var4)); % Vc4
     x6(k) = Ad(6,6)*x6(k-1) + Bd(6,1)*I(k-1)+ normrnd(0,sqrt(var4)); % Vc5
     
-    V_truth(k) = interp1(soc_intpts_OCV',OCV_intpts,x1(k-1)) - I(k-1)*R0 - x2(k-1)- x3(k-1)+normrnd(0,sqrt(R));
+    V_truth(k) = Vbias + interp1(soc_intpts_OCV',OCV_intpts,x1(k-1)) - I(k-1)*R0 - x2(k-1)- x3(k-1)+normrnd(0,sqrt(R));
 end 
-
+%%
 figure()
 hold on 
 plot(t,x1)
@@ -132,7 +134,7 @@ clear V SOC_act
 V = V_truth; 
 SOC_act = x1; 
 
-save('FifthOrder_Truth_BestNAN','V','SOC_act','t','I'); 
+save('Sim_Truth_FifthOrder_w_Bias_good','V','SOC_act','t','I'); 
 
 
 %% 
