@@ -97,7 +97,7 @@ for k = 2:1:length(t)
     x5(k) = Ad(5,5)*x5(k-1) + Bd(5,1)*I(k-1)+ normrnd(0,sqrt(var4)); % Vc4
     x6(k) = Ad(6,6)*x6(k-1) + Bd(6,1)*I(k-1)+ normrnd(0,sqrt(var4)); % Vc5
     
-    V_truth(k) = interp1(soc_intpts_OCV',OCV_intpts,x1(k-1)) - I(k-1)*R0 - x2(k-1)- x3(k-1)+normrnd(0,sqrt(R));
+    V_truth(k) = interp1(soc_intpts_OCV',OCV_intpts,x1(k-1)) - I(k-1)*R0 - x2(k-1)- x3(k-1)-x4(k-1)-x5(k-1)-x6(k-1)+normrnd(0,sqrt(R));
 end 
 
 figure()
@@ -111,7 +111,8 @@ plot(t,V_truth)
 
 %% NaN Determination for Preventing Interpolation Fuckups
 
-thing = isnan(V_truth);
+% thing = isnan(V_truth);
+thing = isnan(x1);
 
 counter =0; 
 for k=1:length(t)
@@ -125,6 +126,23 @@ end
 
 counter
 
+
+
+%% NAN Correction 
+
+for u = 1:length(t)
+    if thing(u) == 1
+        V_truth(u)  = 0; 
+        
+    end
+    
+    
+    
+end 
+
+
+
+
 %% Relabel New truth Data
 
 clear V SOC_act 
@@ -132,7 +150,7 @@ clear V SOC_act
 V = V_truth; 
 SOC_act = x1; 
 
-save('FifthOrder_Truth_BestNAN','V','SOC_act','t','I'); 
+save('J2_EKF_model\DataFiles\Sim_Truth_FifthOrder_Corrected.mat','V','SOC_act','t','I'); 
 
 
 %% 
