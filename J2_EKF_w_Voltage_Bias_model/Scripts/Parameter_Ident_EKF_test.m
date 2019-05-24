@@ -59,7 +59,11 @@ F_ek = 1;
 % Load Battery Measurements 
 load('OCV_table.mat')
 load('OCV_slope_table.mat')
-load('Sim_Truth_ThirdOrder_Corrected1.mat')
+% load('ThreeRCModel_Validation_Data.mat')
+
+load('Sim_Truth_ThirdOrder_with_Bias.mat')
+
+
 
 % Initial Conditions: 
 P(1) = 0;           % Covariance 
