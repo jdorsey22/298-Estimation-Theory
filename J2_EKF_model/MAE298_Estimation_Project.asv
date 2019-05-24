@@ -2,24 +2,22 @@
 
 
 %% Extended Kalman Filter: DP Model: 
-clear all, clc
 
+clear all, clc
 % Import Battery Parameters 
 BatteryParams    
 
+Voc0 = 3.435;
 % Import Kalman Parameters
 KalmanParams
-
 
 % Load Battery Measurements 
 load('OCV_table.mat')
 load('OCV_slope_table.mat')
 load('Sim_Truth_FifthOrder_Corrected1.mat')
 % load('Sim_Truth_SecondOrder_Corrected2.mat')
-% load('Sim_Truth_SecondOrder_Corrected4.mat')
+% load('Sim_Truth_SecondOrder_Corrected.mat')
 
-% Q = 1; 
-% R = 1000;
 
 
 %% Observability & Controlability Analysis: 

@@ -3,6 +3,10 @@
 
 %% Set Parameters: 
 
+
+clear all 
+
+
 C1 = 5630; 
 C2 = 54277; 
 C3 = 56000;
@@ -71,7 +75,7 @@ load('IV_data_nonlinear.mat')
 %% State/Output Simulation with Process/Measurement Noise (Truth) 
 
 P(1) = 0;           % Covariance 
-x1(1) = 1;          % SOC - Battery Fully Charged 
+x1(1) = .98;          % SOC - Battery Fully Charged 
 x2(1) = 0;          % Vc1
 x3(1) = 0;          % Vc2
 x4(1) = 0;          % Vc3
@@ -91,11 +95,11 @@ var3 = 0;
 for k = 2:1:length(t)
     
     x1(k) = Ad(1,1)*x1(k-1) + Bd(1,1)*I(k-1)+ normrnd(0,sqrt(var2)); % soc
-    x2(k) = Ad(2,2)*x2(k-1) + Bd(2,1)*I(k-1) +normrnd(0,sqrt(var4)); % Vc1
-    x3(k) = Ad(3,3)*x3(k-1) + Bd(3,1)*I(k-1)+ normrnd(0,sqrt(var4)); % Vc2
-    x4(k) = Ad(4,4)*x4(k-1) + Bd(4,1)*I(k-1)+ normrnd(0,sqrt(var4)); % Vc3
-    x5(k) = Ad(5,5)*x5(k-1) + Bd(5,1)*I(k-1)+ normrnd(0,sqrt(var4)); % Vc4
-    x6(k) = Ad(6,6)*x6(k-1) + Bd(6,1)*I(k-1)+ normrnd(0,sqrt(var4)); % Vc5
+    x2(k) = Ad(2,2)*x2(k-1) + Bd(2,1)*I(k-1) +normrnd(0,.0002); % Vc1
+    x3(k) = Ad(3,3)*x3(k-1) + Bd(3,1)*I(k-1)+ normrnd(0,.0002); % Vc2
+    x4(k) = Ad(4,4)*x4(k-1) + Bd(4,1)*I(k-1)+ normrnd(0,.0002); % Vc3
+    x5(k) = Ad(5,5)*x5(k-1) + Bd(5,1)*I(k-1)+ normrnd(0,.0002); % Vc4
+    x6(k) = Ad(6,6)*x6(k-1) + Bd(6,1)*I(k-1)+ normrnd(0,.0002); % Vc5
     
     V_truth(k) = interp1(soc_intpts_OCV',OCV_intpts,x1(k-1)) - I(k-1)*R0 - x2(k-1)- x3(k-1)-x4(k-1)-x5(k-1)-x6(k-1)+normrnd(0,sqrt(R));
 end 
@@ -111,8 +115,8 @@ plot(t,V_truth)
 
 %% NaN Determination for Preventing Interpolation Fuckups
 
-% thing = isnan(V_truth);
-thing = isnan(x1);
+thing = isnan(V_truth);
+% thing = isnan(x1);
 
 counter =0; 
 for k=1:length(t)
@@ -140,6 +144,17 @@ for u = 1:length(t)
     
 end 
 
+%% FINAL SOC Correction: 
+
+for O = 1:length(t)
+    if SOC_act(O) >1
+        SOC_act(O) = 1; 
+        
+    end 
+    
+    
+end 
+
 
 
 
@@ -148,9 +163,12 @@ end
 clear V SOC_act 
 
 V = V_truth; 
-SOC_act = x1; 
+SOC_act = x1;
 
-save('J2_EKF_model\DataFiles\Sim_Truth_FifthOrder_Corrected.mat','V','SOC_act','t','I'); 
+V = V'; 
+SOC_act = SOC_act'; 
+
+save('J2_EKF_model\DataFiles\Sim_Truth_FifthOrder_Corrected1.mat','V','SOC_act','t','I'); 
 
 
 %% 
