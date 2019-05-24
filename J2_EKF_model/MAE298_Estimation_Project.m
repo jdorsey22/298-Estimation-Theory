@@ -1,6 +1,6 @@
 %% MAE 298 Estimation Project Matlab Script
 
-
+addpath('DataFiles', 'ParameterFiles', 'Scripts')
 %% Extended Kalman Filter: DP Model: 
 clear all, clc
 

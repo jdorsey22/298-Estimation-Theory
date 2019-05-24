@@ -2,15 +2,15 @@
 
 clear all 
 
-C1 = 5630; 
-C2 = 5427; 
-C3 = 2400;
+C1 = 1000; 
+C2 = 2500; 
+C3 = 5400;
 
 R1 = .00064; 
 R2 = .00824;
 R3 = .0015; 
 
-R0 = .02402; 
+R0 = .002402; 
 alpha = .65; 
 Cbat = 5*3600;  
 
@@ -82,11 +82,11 @@ for k = 2:1:length(t)
     
     x1(k) = Ad(1,1)*x1(k-1) + Bd(1,1)*I(k-1)+ normrnd(0,.0004); % soc
     x2(k) = Ad(2,2)*x2(k-1) + Bd(2,1)*I(k-1) +normrnd(0,.0); % Vc1
-    x3(k) = Ad(3,3)*x3(k-1) + Bd(3,1)*I(k-1)+ normrnd(0,.0001); % Vc2
+    x3(k) = Ad(3,3)*x3(k-1) + Bd(3,1)*I(k-1)+ normrnd(0,.0); % Vc2
     x4(k) = Ad(4,4)*x3(k-1) + Bd(4,1)*I(k-1)+ normrnd(0,.0); % Vc2
 
     
-    V_truth(k) = interp1(soc_intpts_OCV',OCV_intpts,x1(k-1)) - I(k-1)*R0 - x2(k-1)- x3(k-1) -x4(k-1) + normrnd(0,sqrt(R));
+    V_truth(k) = interp1(soc_intpts_OCV',OCV_intpts,x1(k-1)) - I(k)*R0 - x2(k)- x3(k) -x4(k) + normrnd(0,sqrt(R));
 end 
 
 figure()
@@ -157,7 +157,7 @@ SOC_act = SOC_act';
 
 %%
 
-save('J2_EKF_model\DataFiles\Sim_Truth_ThirdOrder_Corrected1.mat','V','SOC_act','t','I'); 
+save('C:\Users\felip\Documents\298-Estimation-Theory\J2_EKF_model\DataFiles\Sim_Truth_ThirdOrder_Corrected1.mat','V','SOC_act','t','I'); 
 
 
 %% 

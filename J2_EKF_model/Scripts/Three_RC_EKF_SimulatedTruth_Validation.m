@@ -16,11 +16,14 @@ clear all, clc
 % alpha = .65; 
 % Cbat = 5*3600;  
 % 
-C1 = 2400; 
-C2 = 2400; 
+C1 = 1000; 
+C2 = 2500; 
+% C1 = 2400; 
+% C2 = 2400; 
 R1 = .015; 
 R2 = .0015; 
-R0 = .01; 
+% R0 = .01; 
+R0 = .02402; 
 alpha = .65; 
 Cbat = 5*3600; 
 
@@ -78,7 +81,7 @@ F_ek = 1;
 % Load Battery Measurements 
 load('OCV_table.mat')
 load('OCV_slope_table.mat')
-load('Sim_Truth_ThirdOrder_Corrected1.mat')
+load('ThreeRCModel_Validation_Data.mat')
 
 % Initial Conditions: 
 P(1) = 0;           % Covariance 
@@ -131,15 +134,15 @@ legend('SOC Act','SOC Est','SOC_ OL');
 %% Extended Kalman Filter: 3RC Pair Validation: 
 clear all 
 
-C1 = 5630; 
-C2 = 5427; 
-C3 = 2400;
+C1 = 1000; 
+C2 = 2500; 
+C3 = 5400;
 
 R1 = .00064; 
 R2 = .00824;
 R3 = .0015; 
 
-R0 = .02402; 
+R0 = .03402; 
 alpha = .65; 
 Cbat = 5*3600;  
 
