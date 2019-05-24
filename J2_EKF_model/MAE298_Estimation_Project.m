@@ -14,9 +14,9 @@ KalmanParams
 % Load Battery Measurements 
 load('OCV_table.mat')
 load('OCV_slope_table.mat')
-load('Sim_Truth_FifthOrder_Corrected1.mat')
-% load('Sim_Truth_SecondOrder_Corrected2.mat')
-% load('Sim_Truth_SecondOrder_Corrected4.mat')
+% load('Sim_Truth_ThirdOrder.mat')
+load('Sim_Truth_SecondOrder_Corrected5.mat')
+
 
 % Q = 1; 
 % R = 1000;
