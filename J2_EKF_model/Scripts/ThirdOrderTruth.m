@@ -40,7 +40,7 @@ dt = .1;
 A_c = [0       0         0           0 ; ...
      0  (-1/(R1*C1))     0           0; ... 
      0       0    (-1/(R2*C2))       0; ...
-     0       0           0      (-1/(R2*C2))]; 
+     0       0           0      (-1/(R3*C3))]; 
 B_c = [(-1/Cbat); (1/C1); (1/C2); (1/C3) ]; 
 C_c = [alpha -1 -1 -1];
 D_c = [-R0]; 
@@ -49,7 +49,7 @@ D_c = [-R0];
 Ad = [1      0        0        0; ...
      0 exp(-dt/Tau1) 0         0; ...
      0      0   exp(-dt/Tau2)  0; ...
-     0      0        0       exp(-dt/Tau2)];
+     0      0        0       exp(-dt/Tau3)];
  
 Bd = [(-dt/Cbat); (R1)*(1-exp(-dt/Tau1)); (R2)*(1-exp(-dt/Tau2));(R3)*(1-exp(-dt/Tau3))]; 
 Cd = C_c; 
@@ -157,7 +157,7 @@ SOC_act = SOC_act';
 
 %%
 
-save('J2_EKF_model\DataFiles\Sim_Truth_ThirdOrder.mat','V','SOC_act','t','I'); 
+save('J2_EKF_model\DataFiles\Sim_Truth_ThirdOrder_Corrected1.mat','V','SOC_act','t','I'); 
 
 
 %% 
