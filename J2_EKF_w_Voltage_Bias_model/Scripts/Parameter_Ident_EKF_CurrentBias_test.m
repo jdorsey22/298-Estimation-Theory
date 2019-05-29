@@ -1,5 +1,5 @@
 %% Parameter Estimation Script - Voltage Bias:
-
+addpath('C:\Users\felip\Documents\298-Estimation-Theory\J2_EKF_w_Voltage_Bias_model\DataFiles')
 clear all, clc
 
 C1 = 1000; 
@@ -38,34 +38,23 @@ Bd = [(-dt/Cbat); (R1)*(1-exp(-dt/Tau1)); (R2)*(1-exp(-dt/Tau2))];
 Cd = C_c; 
 Dd = D_c; 
 
-
-
-% Import Kalman Parameters
-% KalmanParams
-
-
 wk_mean = 0; 
 Q = 2.5*10^-7;
 
 vk_mean = 0; 
 R = 1*10^-4;
 
+Wp = 2.5*10^-9; 
+% Wp = 2.5*10^-6; 
+
 A_ek = 1 ;
 E_ek = 1; 
 F_ek = 1; 
 
-% 
-% Q = 1; 
-% R = 10000;
-
 % Load Battery Measurements 
 load('OCV_table.mat')
 load('OCV_slope_table.mat')
-% load('ThreeRCModel_Validation_Data.mat')
-
-load('Sim_Truth_ThirdOrder_with_Bias.mat')
-
-
+load('Sim_Truth_ThirdOrder_with_CurrentBias.mat')
 
 % Initial Conditions: 
 P(1) = 0;           % Covariance 
@@ -73,13 +62,6 @@ PT(1) =0 ;          % Parameter Covariance
 x1(1) = .98;        % SOC - Battery Fully Charged 
 x2(1) = 0;          % Vc1
 x3(1) = 0;          % Vc2
-
-% Wp = 2.5*10^-8.5; 
-% Wp = 2.5*10^-6; 
-Wp = 2.5*10^-8.5; 
-
-
-
 
 x1_hat(1) = x1(1); 
 theta_hat(1) = 0;
@@ -110,7 +92,7 @@ for k = 2:1:length(t)
    %Kalman Gains
    L = P_prev*C_ek'*inv(C_ek*P_prev*C_ek'+ F_ek*R*F_ek');
    
-   CT_ek(k) = 1-C_ek*(Ad(1,1)*L*CT_ek(k-1)); 
+   CT_ek(k) = -R0+C_ek*(-dt/Cbat+Ad(1,1)*(-dt/Cbat-L*CT_ek(k-1))); 
 
    
    LT = PT_prev*CT_ek(k)'*inv(CT_ek(k)*PT_prev*CT_ek(k)'+ F_ek*R*F_ek');
@@ -123,7 +105,7 @@ for k = 2:1:length(t)
 end 
 
 
-figure();
+figure(1);
 hold on 
 plot(t,SOC_act)
 plot(t,x1_hat)
@@ -131,13 +113,13 @@ plot(t,x1)
 title('Problem #2 Extended Kalman Filter: SOC Results (Jonathan Dorsey)'); 
 xlabel('Time (seconds)'); 
 ylabel('State of Charge (SOC)'); 
-
 legend('SOC Act','SOC Est','SOC_ OL');
-
-
-figure()
-plot(t,theta_hat)
+figure(2)
+hold on 
+plot(t,0.02*ones(size(t)),t,theta_hat)
+title('Current Bias Estimation')
+xlabel('time(s)'), ylabel('Current Bias(A)'), legend('actual', 'estimated')
 %%
 
-figure(); 
+figure(3); 
 plot(t,PT)
