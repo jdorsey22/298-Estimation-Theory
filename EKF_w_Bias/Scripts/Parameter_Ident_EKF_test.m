@@ -116,6 +116,7 @@ for k = 2:1:length(t)
     
     x1_hat(k) = x1_hat_prev + L*(V(k)-V_hat(k));
     theta_hat(k) = theta_hat_prev + LT*(V(k)-V_hat(k));
+    .
     
     P(k) = P_prev - L*C_ek*P_prev;
     PT(k) = PT_prev - LT*CT_ek(k)*PT_prev;
