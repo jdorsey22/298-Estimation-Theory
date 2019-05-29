@@ -1,6 +1,6 @@
 %% Battery Model - Felipe Valdez
-% clear all
-% close all
+clear all
+close all
 
 %Pre-locating arrays
 Vc = zeros(1,length(t));    

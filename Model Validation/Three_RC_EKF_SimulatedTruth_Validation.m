@@ -1,20 +1,7 @@
-%% 3 RC Pair EKF Validation with 2RC Pair Simulated Truth 
-
-
-%% Extended Kalman Filter: DP Model: 
+%% 3rd Order Truth & 2nd Order EKF Model Validation
 
 clear all, clc
 % Import Battery Parameters 
-% BatteryParams    
-% C1 = 5630; 
-% C2 = 54277; 
-% 
-% R1 = .00064; 
-% R2 = .00824;
-% 
-% R0 = .02402; 
-% alpha = .65; 
-% Cbat = 5*3600;  
 
 C1 = 1000; 
 C2 = 2500; 
@@ -131,7 +118,7 @@ ylabel('State of Charge (SOC)');
 
 legend('SOC Act','SOC Est','SOC_ OL');
 
-%% Extended Kalman Filter: 3RC Pair Validation: 
+%% 3rd Order Truth & 3nd Order EKF Model Validation
 clear all 
 
 C1 = 1000; 
@@ -145,17 +132,6 @@ R3 = .0015;
 R0 = .03402; 
 alpha = .65; 
 Cbat = 5*3600;  
-
-% C1 = 2400; 
-% C2 = 2400; 
-% 
-% R1 = .015; 
-% R2 = .0015;
-% R0 = .01; 
-% alpha = .65; 
-% Cbat = 5*3600;  
-% 
-
 
 Tau1 = C1*R1; 
 Tau2 = C2*R2; 

@@ -1,21 +1,8 @@
-%% 2 RC Pair EKF Validation with 2RC Pair Simulated Truth 
-
-
-%% Extended Kalman Filter: DP Model: 
+%% 2nd Order Truth & 2nd Order EKF Model Validation 
 
 clear all, clc
-% Import Battery Parameters 
-% BatteryParams    
-% C1 = 5630; 
-% C2 = 54277; 
-% 
-% R1 = .00064; 
-% R2 = .00824;
-% 
-% R0 = .02402; 
-% alpha = .65; 
-% Cbat = 5*3600;  
 
+% BatteryParams    
 C1 = 2400; 
 C2 = 2400; 
 R1 = .015; 
