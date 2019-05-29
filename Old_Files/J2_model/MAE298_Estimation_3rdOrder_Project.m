@@ -50,7 +50,7 @@ x3 = zeros(1,length(t));
 
 % Initial Conditions: 
 P(1) = 0;           % Covariance 
-x1(1) = 1;          % SOC - Battery Fully Charged 
+x1(1) = .98;          % SOC - Battery Fully Charged 
 x2(1) = 0;          % Vc1
 x3(1) = 0;          % Vc2
 
