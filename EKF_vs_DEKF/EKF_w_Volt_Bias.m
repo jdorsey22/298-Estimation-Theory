@@ -10,8 +10,8 @@ C1 = 1000;
 C2 = 2500; 
 R1 = .015; 
 R2 = .0015; 
-% R0 = .02402; 
-R0=0.001;
+R0 = .002402; 
+% R0=0.001;
 alpha = .65; 
 Cbat = 5*3600; 
 
@@ -70,7 +70,7 @@ F_ek = 1;
 load('OCV_table.mat')
 load('OCV_slope_table.mat')
 % load('ThreeRCModel_Validation_Data.mat')
-load('Sim_Truth_ThirdOrder_with_Bias.mat')
+load('C:\Users\felip\Documents\298-Estimation-Theory\EKF_vs_DEKF\DataFiles\Sim_Truth_ThirdOrder_with_Bias.mat')
 
 % Initial Conditions: 
 P(1) = 0;           % Covariance 

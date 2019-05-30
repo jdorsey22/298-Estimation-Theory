@@ -31,10 +31,11 @@ sys_d= c2d(sys,dt);
 
 % Discrete Time Model: 
 
-Ad = [1      0        0 ; ...
-     0 exp(-dt/Tau1) 0 ; ...
-     0      0   exp(-dt/Tau2)]; 
-Bd = [(-dt/Cbat); (R1)*(1-exp(-dt/Tau1)); (R2)*(1-exp(-dt/Tau2))]; 
+Ad = [1      0        0               dt/Cbat ; ...
+     0 exp(-dt/Tau1)  0         -(R1)*(1-exp(-dt/Tau1));...
+     0      0   exp(-dt/Tau2)   -(R2)*(1-exp(-dt/Tau2));...
+     0      0         0                    1 ]; 
+Bd = [(-dt/Cbat); (R1)*(1-exp(-dt/Tau1)); (R2)*(1-exp(-dt/Tau2)); 0]; 
 Cd = C_c; 
 Dd = D_c; 
 
@@ -44,7 +45,7 @@ Q = 2.5*10^-7;
 vk_mean = 0; 
 R = 1*10^-4;
 
-Wp = 2.5*10^-9; 
+Wp = 2.5*10^-8.2; 
 % Wp = 2.5*10^-6; 
 
 A_ek = 1 ;
@@ -54,7 +55,7 @@ F_ek = 1;
 % Load Battery Measurements 
 load('OCV_table.mat')
 load('OCV_slope_table.mat')
-load('Sim_Truth_ThirdOrder_with_CurrentBias.mat')
+load('C:\Users\felip\Documents\298-Estimation-Theory\EKF_w_CurrentBias\DataFiles\Sim_Truth_ThirdOrder_with_CurrentBias.mat')
 
 % Initial Conditions: 
 P(1) = 0;           % Covariance 
@@ -62,6 +63,7 @@ PT(1) =0 ;          % Parameter Covariance
 x1(1) = .98;        % SOC - Battery Fully Charged 
 x2(1) = 0;          % Vc1
 x3(1) = 0;          % Vc2
+x4(1) = 0;          % theta
 
 x1_hat(1) = x1(1); 
 theta_hat(1) = 0;
@@ -72,6 +74,7 @@ for k = 2:1:length(t)
     x1(k) = Ad(1,1)*x1(k-1) + Bd(1,1)*I(k-1); % soc
     x2(k) = Ad(2,2)*x2(k-1) + Bd(2,1)*I(k-1); % Vc1
     x3(k) = Ad(3,3)*x3(k-1) + Bd(3,1)*I(k-1); % Vc2
+    x4(k) = Ad(4,4)*x4(k-1) + Bd(4,1)*I(k-1); % theta
     
     % Model Prediction: 
     x1_hat_prev = Ad(1,1)*x1_hat(k-1) + Bd(1,1)*I(k-1);
@@ -87,12 +90,12 @@ for k = 2:1:length(t)
     C_ek = interp1(soc_intpts_OCV_slope', OCV_slope_intpts, x1_hat_prev);
     
    % Measurement Update: 
-   V_hat(k) = interp1(soc_intpts_OCV',OCV_intpts,x1_hat_prev) - I(k)*R0 - x2(k) - x3(k)+ theta_hat_prev;
+   V_hat(k) = interp1(soc_intpts_OCV',OCV_intpts,x1_hat_prev) - (I(k)- theta_hat_prev)*R0 - x2(k) - x3(k);
     
    %Kalman Gains
    L = P_prev*C_ek'*inv(C_ek*P_prev*C_ek'+ F_ek*R*F_ek');
    
-   CT_ek(k) = -R0+C_ek*(-dt/Cbat+Ad(1,1)*(-dt/Cbat-L*CT_ek(k-1))); 
+   CT_ek(k) = -R0 + C_ek*(-dt/Cbat + Ad(1,1)*(-dt/Cbat - L*CT_ek(k-1))); 
 
    
    LT = PT_prev*CT_ek(k)'*inv(CT_ek(k)*PT_prev*CT_ek(k)'+ F_ek*R*F_ek');

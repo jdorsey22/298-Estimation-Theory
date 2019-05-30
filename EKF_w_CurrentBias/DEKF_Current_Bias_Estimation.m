@@ -1,6 +1,5 @@
 %% Parameter Estimation Script - Voltage Bias:
-addpath('C:\Users\felip\Documents\298-Estimation-Theory\J2_EKF_w_Voltage_Bias_model\DataFiles')
-clear all, clc
+clear all; clc;
 
 C1 = 1000; 
 C2 = 2500; 
@@ -40,13 +39,12 @@ Cd = C_c;
 Dd = D_c; 
 
 wk_mean = 0; 
-Q = 2.5*10^-6;
+Q = 2.5*10^-7;
 
 vk_mean = 0; 
 R = 1*10^-4;
 
-Wp = 2.5*10^-8.2; 
-% Wp = 2.5*10^-6; 
+Wp = 2.5*10^-8.4; 
 
 A_ek = 1 ;
 E_ek = 1; 
@@ -113,15 +111,18 @@ hold on
 plot(t,SOC_act)
 plot(t,x1_hat)
 plot(t,x1)
-title('Problem #2 Extended Kalman Filter: SOC Results (Jonathan Dorsey)'); 
+title('Tuned Dual EKF w/Parameter Estimation (12.5mA)'); 
 xlabel('Time (seconds)'); 
 ylabel('State of Charge (SOC)'); 
 legend('SOC Act','SOC Est','SOC_ OL');
+grid on;
+
 figure(2)
 hold on 
-plot(t,0.02*ones(size(t)),t,theta_hat)
-title('Current Bias Estimation')
-xlabel('time(s)'), ylabel('Current Bias(A)'), legend('actual', 'estimated')
+plot(t,theta_hat,t,0.0125*ones(size(t)),'--')
+title('DEKF Parameter Estimation (12.5mA)')
+xlabel('time(s)'), ylabel('Current Bias(A)'), legend('Est Bias', 'Act Bias')
+grid on;
 %%
 
 figure(3); 

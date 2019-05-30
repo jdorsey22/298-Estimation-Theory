@@ -1,5 +1,4 @@
 %% Set Parameters: 
-addpath('C:\Users\felip\Documents\298-Estimation-Theory\J2_EKF_model')
 clear all 
 
 C1 = 1000; 
@@ -67,7 +66,7 @@ x1(1) = .98;          % SOC - Battery Fully Charged
 x2(1) = 0;          % Vc1
 x3(1) = 0;          % Vc2
 
-Ibias = 0.02; % 20mA Measurment Bias 
+Ibias = 0.0125; % 20mA Measurment Bias 
 
 x1_hat(1) = x1(1); 
 
@@ -157,7 +156,7 @@ SOC_act = SOC_act';
 
 %%
 
-save('Sim_Truth_ThirdOrder_with_CurrentBias.mat','V','SOC_act','t','I'); 
+save('C:\Users\felip\Documents\298-Estimation-Theory\EKF_w_CurrentBias\DataFiles\Sim_Truth_ThirdOrder_with_CurrentBias.mat','V','SOC_act','t','I'); 
 
 
 %% 
