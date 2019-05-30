@@ -10,7 +10,7 @@ R1 = .00064;
 R2 = .00824;
 R3 = .0015; 
 
-R0 = .02402; 
+R0 = .002402; 
 alpha = .65; 
 Cbat = 5*3600;  
 
@@ -55,8 +55,8 @@ Bd = [(-dt/Cbat); (R1)*(1-exp(-dt/Tau1)); (R2)*(1-exp(-dt/Tau2));(R3)*(1-exp(-dt
 Cd = C_c; 
 Dd = D_c; 
 
-addpath('C:\Users\felip\Documents\298-Estimation-Theory\EKF_vs_DEKF\ParameterFiles')
-%KalmanParams
+
+KalmanParams
 % Load Battery Measurements 
 load('OCV_table.mat')
 load('OCV_slope_table.mat')
@@ -68,8 +68,6 @@ P(1) = 0;           % Covariance
 x1(1) = .98;          % SOC - Battery Fully Charged 
 x2(1) = 0;          % Vc1
 x3(1) = 0;          % Vc2
-
-Vbias = .020; % 20mV Measurment Bias 
 
 x1_hat(1) = x1(1); 
 
@@ -88,7 +86,7 @@ for k = 2:1:length(t)
     x4(k) = Ad(4,4)*x3(k-1) + Bd(4,1)*I(k-1)+ normrnd(0,.0); % Vc2
 
     
-    V_truth(k) = interp1(soc_intpts_OCV',OCV_intpts,x1(k-1)) - I(k)*R0 - x2(k)- x3(k) -x4(k) + Vbias + normrnd(0,sqrt(R));
+    V_truth(k) = interp1(soc_intpts_OCV',OCV_intpts,x1(k-1)) - I(k)*R0 - x2(k)- x3(k) -x4(k) + normrnd(0,sqrt(R));
 end 
 
 figure()
@@ -98,12 +96,12 @@ plot(t,SOC_act)
 legend('Simulated Truth','Lin_SOC_act');
 
 figure(); 
-plot(t,V_truth,t, 0.02)
+plot(t,V_truth)
 
 %% NaN Determination for Preventing Interpolation Fuckups
 
-% thing = isnan(V_truth);
-thing = isnan(x1);
+thing = isnan(V_truth);
+% thing = isnan(x1);
 % thing = isnan(V);
 
 
@@ -159,7 +157,7 @@ SOC_act = SOC_act';
 
 %%
 
-save('Sim_Truth_ThirdOrder_with_Bias.mat','V','SOC_act','t','I'); 
+save('C:\Users\felip\Documents\298-Estimation-Theory\J2_EKF_model\DataFiles\Sim_Truth_ThirdOrder_Corrected1.mat','V','SOC_act','t','I'); 
 
 
 %% 
