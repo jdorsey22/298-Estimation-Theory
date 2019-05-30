@@ -118,3 +118,17 @@ figure(2)
 plot(t, V, t ,V_hat), legend('V_{act}', 'V_{est}')
 xlabel('Time (seconds)'), ylabel('V (Volts)'), grid on;
 title('Linear Kalman Filter SOC Estimation'); 
+
+%%
+e = SOC_act - x1_hat';
+sigma = sqrt(P(end));
+
+interval = linspace(-0.02,0.02,3500);
+[f,x]=hist(e,interval); %use hist function and get unnormalized values
+fx_pdf = pdf('norm',x,0,sigma); 
+
+figure; plot(x,f,x,fx_pdf,'r');
+xlabel('error'), ylabel('probability density')
+legend('SOC estimation error','N(0,P)'), title('Felipe Valdez')
+figure, plot(t,e), xlabel('time(s)'), ylabel('error')
+
