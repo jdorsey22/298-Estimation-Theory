@@ -1,29 +1,21 @@
-%% MAE 298 Estimation Project Matlab Script
+%% Parameter Estimation Script - Voltage Bias:
 
-%% Extended Kalman Filter: DP Model_ Third Order Truth 
-
-clear all, clc
-% Import Battery Parameters 
-% BatteryParams    
-
+clear all; clc;
+addpath('C:\Users\felip\Documents\298-Estimation-Theory\EKF_vs_DEKF\DataFiles')
 C1 = 1000; 
 C2 = 2500; 
 R1 = .015; 
 R2 = .0015; 
 % R0 = .02402; 
-R0=0.001;
+R0 = .001; 
+
 alpha = .65; 
 Cbat = 5*3600; 
-
 
 Tau1 = C1*R1; 
 Tau2 = C2*R2; 
 
 dt = .1; 
-
-% System Dynamics
-
-% Linear State Dynamics: Dual Polarity Model 
 
 % Continuous Time Model: 
 A_c = [0       0         0 ; ...
@@ -70,15 +62,27 @@ F_ek = 1;
 load('OCV_table.mat')
 load('OCV_slope_table.mat')
 % load('ThreeRCModel_Validation_Data.mat')
+
 load('Sim_Truth_ThirdOrder_with_Bias.mat')
 
+
+
 % Initial Conditions: 
-P(1) = 0;            % Covariance 
-x1(1) = .98;          % SOC - Battery Fully Charged 
+P(1) = 0;           % Covariance 
+PT(1) =0 ;          % Parameter Covariance
+x1(1) = .98;        % SOC - Battery Fully Charged 
 x2(1) = 0;          % Vc1
 x3(1) = 0;          % Vc2
 
+Wp = 2.5*10^-8.5; 
+% Wp = 2.5*10^-6; 
+
+
+
+
 x1_hat(1) = x1(1); 
+theta_hat(1) = 0;
+CT_ek(1) =0; 
 
 for k = 2:1:length(t)
     
@@ -88,25 +92,35 @@ for k = 2:1:length(t)
     
     % Model Prediction: 
     x1_hat_prev = Ad(1,1)*x1_hat(k-1) + Bd(1,1)*I(k-1);
+    theta_hat_prev = theta_hat(k-1);
+
+    P_prev = A_ek*P(k-1)*A_ek'+ E_ek*Q*E_ek';
+    PT_prev = PT(k-1)+ E_ek*Wp*E_ek';
     
     if(x1_hat_prev >1)
         x1_hat_prev = 1; 
     end 
-%     
-    C_ek = interp1(soc_intpts_OCV_slope', OCV_slope_intpts, x1_hat_prev);
 
-    P_prev = A_ek*P(k-1)*A_ek'+ E_ek*Q*E_ek';
+    C_ek = interp1(soc_intpts_OCV_slope', OCV_slope_intpts, x1_hat_prev);
     
    % Measurement Update: 
-   V_hat(k) = interp1(soc_intpts_OCV',OCV_intpts,x1_hat_prev) - I(k)*R0 - x2(k) - x3(k);
+   V_hat(k) = interp1(soc_intpts_OCV',OCV_intpts,x1_hat_prev) - I(k)*R0 - x2(k) - x3(k)+ theta_hat_prev;
     
+   %Kalman Gains
    L = P_prev*C_ek'*inv(C_ek*P_prev*C_ek'+ F_ek*R*F_ek');
+   
+   CT_ek(k) = 1-C_ek*(Ad(1,1)*L*CT_ek(k-1)); 
+
+   
+   LT = PT_prev*CT_ek(k)'*inv(CT_ek(k)*PT_prev*CT_ek(k)'+ F_ek*R*F_ek');
     
     x1_hat(k) = x1_hat_prev + L*(V(k)-V_hat(k));
-    P(k) = P_prev - L*C_ek*P_prev;
+    theta_hat(k) = theta_hat_prev + LT*(V(k)-V_hat(k));
     
+    
+    P(k) = P_prev - L*C_ek*P_prev;
+    PT(k) = PT_prev - LT*CT_ek(k)*PT_prev;
 end 
-
 
 
 figure(1);
@@ -114,7 +128,7 @@ hold on
 plot(t,SOC_act)
 plot(t,x1_hat)
 plot(t,x1)
-title('Extended Kalman Filter SOC Estimation'); 
+title('Dual Extended Kalman Filter SOC Estimation'); 
 xlabel('Time (seconds)'); 
 ylabel('State of Charge (SOC)'); 
 legend('SOC_{act}','SOC_{est}','SOC_{OL}');
@@ -122,28 +136,14 @@ grid on;
 
 figure(2);
 plot(t,V,t,V_hat)
-title('Extended Kalman Filter SOC Estimation'); 
+title('Dual Extended Kalman Filter SOC Estimation'); 
 xlabel('Time (seconds)'); 
 ylabel('Terminal Voltage (V)'); 
 legend('V_{act}','V_{est}');
 grid on;
+figure()
+plot(t,theta_hat)
+%%
 
-
-%% Observability & Controlability Analysis: 
-
-O = obsv(Ad,Cd);
-
-rank(O)
-
-% Observability Matrix is of Full Rank: System is fully Observable  
-
-Cm = ctrb(Ad,Bd);
-
-rank(Cm)
-
-% Controlability Matrix is of Full Rank: System is fully Controlable
-
-
-
-
-
+figure(); 
+plot(t,PT)
