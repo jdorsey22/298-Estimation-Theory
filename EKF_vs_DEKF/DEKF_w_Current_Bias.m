@@ -1,7 +1,6 @@
 %% Parameter Estimation Script - Voltage Bias:
-
 clear all; clc;
-addpath('C:\Users\felip\Documents\298-Estimation-Theory\EKF_vs_DEKF\DataFiles')
+
 C1 = 1000; 
 C2 = 2500; 
 R1 = .015; 
@@ -31,18 +30,13 @@ sys_d= c2d(sys,dt);
 
 % Discrete Time Model: 
 
-Ad = [1      0        0 ; ...
-     0 exp(-dt/Tau1) 0 ; ...
-     0      0   exp(-dt/Tau2)]; 
-Bd = [(-dt/Cbat); (R1)*(1-exp(-dt/Tau1)); (R2)*(1-exp(-dt/Tau2))]; 
+Ad = [1      0        0               dt/Cbat ; ...
+     0 exp(-dt/Tau1)  0         -(R1)*(1-exp(-dt/Tau1));...
+     0      0   exp(-dt/Tau2)   -(R2)*(1-exp(-dt/Tau2));...
+     0      0         0                    1 ]; 
+Bd = [(-dt/Cbat); (R1)*(1-exp(-dt/Tau1)); (R2)*(1-exp(-dt/Tau2)); 0]; 
 Cd = C_c; 
 Dd = D_c; 
-
-
-
-% Import Kalman Parameters
-% KalmanParams
-
 
 wk_mean = 0; 
 Q = 2.5*10^-7;
@@ -50,20 +44,16 @@ Q = 2.5*10^-7;
 vk_mean = 0; 
 R = 1*10^-4;
 
+Wp = 2.5*10^-8.5; 
+
 A_ek = 1 ;
 E_ek = 1; 
 F_ek = 1; 
 
-% 
-% Q = 1; 
-% R = 10000;
-
 % Load Battery Measurements 
 load('OCV_table.mat')
 load('OCV_slope_table.mat')
-% load('ThreeRCModel_Validation_Data.mat')
-
-load('C:\Users\felip\Documents\298-Estimation-Theory\EKF_vs_DEKF\DataFiles\Sim_Truth_ThirdOrder_with_Bias.mat')
+load('C:\Users\felip\Documents\298-Estimation-Theory\EKF_vs_DEKF\DataFiles\Sim_Truth_ThirdOrder_with_CurrentBias.mat')
 
 % Initial Conditions: 
 P(1) = 0;           % Covariance 
@@ -71,8 +61,7 @@ PT(1) =0 ;          % Parameter Covariance
 x1(1) = .98;        % SOC - Battery Fully Charged 
 x2(1) = 0;          % Vc1
 x3(1) = 0;          % Vc2
-
-Wp = 2.5*10^-8.5; 
+x4(1) = 0;          % theta
 
 x1_hat(1) = x1(1); 
 theta_hat(1) = 0;
@@ -83,6 +72,7 @@ for k = 2:1:length(t)
     x1(k) = Ad(1,1)*x1(k-1) + Bd(1,1)*I(k-1); % soc
     x2(k) = Ad(2,2)*x2(k-1) + Bd(2,1)*I(k-1); % Vc1
     x3(k) = Ad(3,3)*x3(k-1) + Bd(3,1)*I(k-1); % Vc2
+    x4(k) = Ad(4,4)*x4(k-1) + Bd(4,1)*I(k-1); % theta
     
     % Model Prediction: 
     x1_hat_prev = Ad(1,1)*x1_hat(k-1) + Bd(1,1)*I(k-1);
@@ -98,19 +88,18 @@ for k = 2:1:length(t)
     C_ek = interp1(soc_intpts_OCV_slope', OCV_slope_intpts, x1_hat_prev);
     
    % Measurement Update: 
-   V_hat(k) = interp1(soc_intpts_OCV',OCV_intpts,x1_hat_prev) - I(k)*R0 - x2(k) - x3(k)+ theta_hat_prev;
+   V_hat(k) = interp1(soc_intpts_OCV',OCV_intpts,x1_hat_prev) - (I(k)- theta_hat_prev)*R0 - x2(k) - x3(k);
     
    %Kalman Gains
    L = P_prev*C_ek'*inv(C_ek*P_prev*C_ek'+ F_ek*R*F_ek');
    
-   CT_ek(k) = 1-C_ek*(Ad(1,1)*L*CT_ek(k-1)); 
+   CT_ek(k) = -R0 + C_ek*(-dt/Cbat + Ad(1,1)*(-dt/Cbat - L*CT_ek(k-1))); 
 
    
    LT = PT_prev*CT_ek(k)'*inv(CT_ek(k)*PT_prev*CT_ek(k)'+ F_ek*R*F_ek');
     
     x1_hat(k) = x1_hat_prev + L*(V(k)-V_hat(k));
     theta_hat(k) = theta_hat_prev + LT*(V(k)-V_hat(k));
-    
     
     P(k) = P_prev - L*C_ek*P_prev;
     PT(k) = PT_prev - LT*CT_ek(k)*PT_prev;
@@ -122,34 +111,19 @@ hold on
 plot(t,SOC_act)
 plot(t,x1_hat)
 plot(t,x1)
-title('Dual Extended Kalman Filter SOC Estimation'); 
+title('Dual Extended Kalman Filter SOC Estimation (12.5mA bias)'); 
 xlabel('Time (seconds)'); 
 ylabel('State of Charge (SOC)'); 
-legend('SOC_{act}','SOC_{est}','SOC_{OL}');
+legend('SOC Act','SOC Est','SOC_ OL');
 grid on;
 
-figure(2);
-plot(t,V,t,V_hat)
-title('Dual Extended Kalman Filter SOC Estimation'); 
-xlabel('Time (seconds)'); 
-ylabel('Terminal Voltage (V)'); 
-legend('V_{act}','V_{est}');
+figure(2)
+hold on 
+plot(t,theta_hat,t,0.0125*ones(size(t)),'--')
+title('DEKF Parameter Estimation (12.5mA)')
+xlabel('time(s)'), ylabel('Current Bias(A)'), legend('Est Bias', 'Act Bias')
 grid on;
-figure()
-plot(t,theta_hat)
 %%
 
-figure(); 
+figure(3); 
 plot(t,PT)
-%%
-e = SOC_act - x1_hat';
-sigma = sqrt(P(end));
-
-interval = linspace(-0.02,0.02,3500);
-[f,x]=hist(e,interval); %use hist function and get unnormalized values
-fx_pdf = pdf('norm',x,0,sigma); 
-
-figure; plot(x,f,x,fx_pdf,'r');
-xlabel('error'), ylabel('probability density')
-legend('SOC estimation error','N(0,P)'), title('Felipe Valdez')
-figure, plot(t,e), xlabel('time(s)'), ylabel('error')

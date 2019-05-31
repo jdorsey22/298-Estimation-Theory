@@ -70,7 +70,7 @@ F_ek = 1;
 load('OCV_table.mat')
 load('OCV_slope_table.mat')
 % load('ThreeRCModel_Validation_Data.mat')
-load('C:\Users\felip\Documents\298-Estimation-Theory\EKF_vs_DEKF\DataFiles\Sim_Truth_ThirdOrder_with_Bias.mat')
+load('C:\Users\felip\Documents\298-Estimation-Theory\EKF_vs_DEKF\DataFiles\Sim_Truth_ThirdOrder_with_CurrentBias.mat')
 
 % Initial Conditions: 
 P(1) = 0;           % Covariance 
