@@ -2,9 +2,7 @@
 
 %% Extended Kalman Filter: DP Model_ Third Order Truth 
 
-clear all, clc
-% Import Battery Parameters 
-% BatteryParams    
+clear all; clc; 
 
 C1 = 1000; 
 C2 = 2500; 

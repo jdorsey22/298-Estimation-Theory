@@ -63,9 +63,7 @@ load('OCV_table.mat')
 load('OCV_slope_table.mat')
 % load('ThreeRCModel_Validation_Data.mat')
 
-load('Sim_Truth_ThirdOrder_with_Bias.mat')
-
-
+load('C:\Users\felip\Documents\298-Estimation-Theory\EKF_vs_DEKF\DataFiles\Sim_Truth_ThirdOrder_with_Bias.mat')
 
 % Initial Conditions: 
 P(1) = 0;           % Covariance 
@@ -75,10 +73,6 @@ x2(1) = 0;          % Vc1
 x3(1) = 0;          % Vc2
 
 Wp = 2.5*10^-8.5; 
-% Wp = 2.5*10^-6; 
-
-
-
 
 x1_hat(1) = x1(1); 
 theta_hat(1) = 0;
